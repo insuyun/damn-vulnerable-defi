@@ -26,7 +26,7 @@ describe('[Challenge] Unstoppable', function () {
 
         expect(await token.balanceOf(vault.address)).to.eq(TOKENS_IN_VAULT);
         expect(await vault.totalAssets()).to.eq(TOKENS_IN_VAULT);
-        expect(await vault.totalSupply()).to.eq(TOKENS_IN_VAULT);
+        expect  (await vault.totalSupply()).to.eq(TOKENS_IN_VAULT);
         expect(await vault.maxFlashLoan(token.address)).to.eq(TOKENS_IN_VAULT);
         expect(await vault.flashFee(token.address, TOKENS_IN_VAULT - 1n)).to.eq(0);
         expect(
@@ -45,6 +45,7 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
+        await token.transfer(vault.address, INITIAL_PLAYER_TOKEN_BALANCE);
     });
 
     after(async function () {
